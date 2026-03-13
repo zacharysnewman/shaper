@@ -9,6 +9,7 @@ namespace Shaper.Shapes
     {
         private float radius;
         private float arcAngle; // Arc angle in degrees
+        private SemiCircleOrigin origin;
 
         public float Area
         {
@@ -30,10 +31,11 @@ namespace Shaper.Shapes
             }
         }
 
-        public SemiCircle(float radius, float arcAngle) : base()
+        public SemiCircle(float radius, float arcAngle, SemiCircleOrigin origin = SemiCircleOrigin.CircleCenter) : base()
         {
             this.radius = radius;
             this.arcAngle = arcAngle;
+            this.origin = origin;
         }
 
         public List<(float, float)> GetRelativePoints(int pointsPerDegree = 360)
@@ -71,6 +73,18 @@ namespace Shaper.Shapes
             float len = Mathf.Sqrt(Randomf.Range(0f, 1f));
             float x = len * Mathf.Cos(theta) * radius;
             float y = len * Mathf.Sin(theta) * radius;
+
+            if (origin == SemiCircleOrigin.Centroid)
+            {
+                // Centroid of a circular sector is at (2r/3) * sin(α/2) / (α/2) from the circle center,
+                // along the bisector of the arc.
+                float alpha = Mathf.DegToRad(arcAngle);
+                float bisector = Mathf.DegToRad(arcAngle / 2f);
+                float d = (2f * radius * Mathf.Sin(alpha / 2f)) / (3f * (alpha / 2f));
+                x -= d * Mathf.Cos(bisector);
+                y -= d * Mathf.Sin(bisector);
+            }
+
             return (x, y);
         }
     }
