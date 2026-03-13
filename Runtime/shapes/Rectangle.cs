@@ -19,6 +19,6 @@ namespace Shaper.Shapes
         }
 
         public override(float, float) GetRandomPoint() =>
-            (Randomf.Range(-this.Width, this.Width), Randomf.Range(-this.Height, this.Height));
+            (Randomf.Range(-this.Width / 2f, this.Width / 2f), Randomf.Range(-this.Height / 2f, this.Height / 2f));
     }
 }

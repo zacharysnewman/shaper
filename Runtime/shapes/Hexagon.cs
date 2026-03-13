@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using Shaper.Random;
 using static Shaper.Math.Mathf;
 
 namespace Shaper.Shapes
 {
-    public class Hexagon
+    public class Hexagon : Shape2D, IShape2D
     {
         public float Circumradius { get; private set; }
 
@@ -13,28 +13,37 @@ namespace Shaper.Shapes
             Circumradius = circumradius;
         }
 
-        public float Area => 3 * Sqrt(3) / 2 * Circumradius * Circumradius;
+        public float Area => 3f * Sqrt(3f) / 2f * Circumradius * Circumradius;
 
-        public float Perimeter => 6 * Circumradius * Sin(PI / 3);
+        // Side length of a regular hexagon equals its circumradius
+        public float Perimeter => 6f * Circumradius;
 
-        public float Width => 2 * Circumradius;
+        public float Width => 2f * Circumradius;
 
-        public float Height => Sqrt(3) * Circumradius;
+        public float Height => Sqrt(3f) * Circumradius;
 
-        public (float, float, float)[] GetVertices()
+        public (float, float)[] GetVertices()
         {
-            (float, float, float)[] vertices = new (float, float, float)[6]; // 6 vertices
-
+            var vertices = new (float, float)[6];
             for (int i = 0; i < 6; i++)
             {
-                float angle_deg = 60 * i - 30; // Start at -30 degrees to orient with flat sides on top and bottom
-                float angle_rad = DegToRad(angle_deg);
-                float x = Circumradius * Cos(angle_rad);
-                float y = Circumradius * Sin(angle_rad);
-                vertices[i] = (x, y, 0);
+                float angle_rad = DegToRad(60f * i - 30f);
+                vertices[i] = (Circumradius * Cos(angle_rad), Circumradius * Sin(angle_rad));
             }
-
             return vertices;
+        }
+
+        public override (float, float) GetRandomPoint()
+        {
+            var vertices = GetVertices();
+            int tri = (int)(Randomf.Range(0f, 1f) * 6f);
+            if (tri >= 6) tri = 5;
+            var (bx, by) = vertices[tri];
+            var (cx, cy) = vertices[(tri + 1) % 6];
+            float r1 = Randomf.Range(0f, 1f);
+            float r2 = Randomf.Range(0f, 1f);
+            if (r1 + r2 > 1f) { r1 = 1f - r1; r2 = 1f - r2; }
+            return (r1 * bx + r2 * cx, r1 * by + r2 * cy);
         }
     }
 }
