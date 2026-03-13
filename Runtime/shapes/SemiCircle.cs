@@ -65,6 +65,13 @@ namespace Shaper.Shapes
             return points;
         }
 
-        public override (float, float) GetRandomPoint() => throw new NotImplementedException();
+        public override (float, float) GetRandomPoint()
+        {
+            float theta = Mathf.DegToRad(Randomf.Range(0f, arcAngle));
+            float len = Mathf.Sqrt(Randomf.Range(0f, 1f));
+            float x = len * Mathf.Cos(theta) * radius;
+            float y = len * Mathf.Sin(theta) * radius;
+            return (x, y);
+        }
     }
 }
